@@ -1,0 +1,4 @@
+[deps]
+InventoryRoutingProblems = "e8de3f6f-ae4e-4f89-bef5-bb3731e07e8d"
+Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
+p7zip_jll = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
