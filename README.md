@@ -50,7 +50,7 @@ end
 Some classical IRP instances from the literature are preloaded, following [DIMACS](http://dimacs.rutgers.edu/programs/challenge/vrp/irp/) naming. For example, to load IRP instance `L_abs2n200_5_H`:
 
 ```julia
-irp = loadInventoryRoutingProblem("L_abs2n200_5_H")
+irp = loadIRP("L_abs2n200_5_H")
 ```
 
 See the full list on the [DIMACS](http://dimacs.rutgers.edu/programs/challenge/vrp/irp/) page.
@@ -69,17 +69,19 @@ Open Julia's interactive session (REPL) and type:
 ] add https://github.com/rafaelmartinelli/InventoryRoutingProblems.jl
 ```
 
+__Do not forget__ to :star:star:star: our package! :grin:
+
 ## Related links
 
 - [DIMACS IRP Page](http://dimacs.rutgers.edu/programs/challenge/vrp/irp/)
 
 ## Other packages
 
-- [KnapsackLib.jl](https://github.com/rafaelmartinelli/Knapsacks.jl): Knapsack algorithms in Julia
+- [Knapsacks.jl](https://github.com/rafaelmartinelli/Knapsacks.jl): Knapsack algorithms in Julia
 - [FacilityLocationProblems.jl](https://github.com/rafaelmartinelli/FacilityLocationProblems.jl): Facility Location Problems Lib
 - [AssignmentProblems.jl](https://github.com/rafaelmartinelli/AssignmentProblems.jl): Assignment Problems Lib
 - [BPPLib.jl](https://github.com/rafaelmartinelli/BPPLib.jl): Bin Packing and Cutting Stock Problems Lib
-- [MDVSP.jl](https://github.com/rafaelmartinelli/MDVSP.jl): Multiple-Depot Vehicle Scheduling Problem Lib
 - [CARPData.jl](https://github.com/rafaelmartinelli/CARPData.jl): Capacitated Arc Routing Problem Lib
+- [MDVSP.jl](https://github.com/rafaelmartinelli/MDVSP.jl): Multiple-Depot Vehicle Scheduling Problem Lib
 - [CVRPLIB.jl](https://github.com/chkwon/CVRPLIB.jl): Capacitated Vehicle Routing Problem Lib
 - [TSPLIB.jl](https://github.com/matago/TSPLIB.jl): Traveling Salesman Problem Lib
