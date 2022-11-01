@@ -1,6 +1,6 @@
-function loadIRP(name::String)
-    abs_name = joinpath(data_path, name * ".dat")
-    raw = split(read(abs_name, String))
+function loadIRP(name::String)::Union{InventoryRoutingProblem, Nothing}
+    raw = getRawData(name)
+    if raw === nothing return nothing end
 
     num_vertices = parse(Int64, raw[1])
     num_periods = parse(Int64, raw[2])
@@ -31,5 +31,23 @@ function loadIRP(name::String)
 
     costs = [ round(euclidean(vertices[v].coord, vertices[w].coord) + EPS) for v in 1:num_vertices, w in 1:num_vertices ]
 
-    return InventoryRoutingProblem(name, vertices, num_vehicles, num_periods, capacity, costs, 0.0, Inf64)
+    return InventoryRoutingProblem(name, vertices, num_vehicles, num_periods, capacity, costs, loadBounds(name)...)
+end
+
+function getRawData(name::String)::Union{Vector{String}, Nothing}
+    data_file = joinpath(data_path, "data.7z")
+    file_name = name * ".dat"
+
+    run(pipeline(`$(p7zip()) e $data_file -y -o$data_path $file_name`; stdout = devnull, stderr = devnull))
+
+    abs_file_name = joinpath(data_path, file_name)
+    if !isfile(abs_file_name)
+        println("File $(string(instance)) not found!")
+        return nothing
+    end
+
+    raw = split(read(abs_file_name, String))
+    rm(abs_file_name)
+
+    return raw
 end

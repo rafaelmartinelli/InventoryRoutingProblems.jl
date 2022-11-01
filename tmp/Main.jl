@@ -1,4 +1,4 @@
-using Revise
 using InventoryRoutingProblems
 
-data = loadIRP("L_abs1n50_2_H")
+file = "L_abs2n200_5_H"
+data = loadIRP(file)
