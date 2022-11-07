@@ -36,7 +36,7 @@ The type `IRPVertex` is defined as follows:
 struct IRPVertex
     id::Int64              # Sequential id
 
-    inv_inital::Int64      # Initial inventory
+    inv_init::Int64        # Initial inventory
     inv_min::Int64         # Minimum inventory
     inv_max::Int64         # Maximum inventory
     inv_cost::Float64      # Inventory cost

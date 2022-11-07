@@ -1,7 +1,7 @@
 struct IRPVertex
     id::Int64
 
-    inv_inital::Int64
+    inv_init::Int64
     inv_min::Int64
     inv_max::Int64
     inv_cost::Float64
