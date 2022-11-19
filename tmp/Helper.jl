@@ -1,9 +1,24 @@
+using JuMP
+
+function checkFeasibility(status, has_values)
+    inv_feasible = false
+    if status == MOI.OPTIMAL
+        inv_feasible = true
+    elseif status == MOI.TIME_LIMIT && has_values
+        inv_feasible = true
+    else
+        inv_feasible = false
+    end
+    return inv_feasible
+end
+
 function evalInventory(data::InventoryRoutingProblem, sol::Vector{Vector{Vector{Int64}}})
     V = 1:length(data.vertices)
     K = 1:data.num_vehicles
     H = 1:data.num_periods
 
-    model = Model(Gurobi.Optimizer)
+    model = Model(HiGHS.Optimizer)
+    set_silent(model)
 
     @variable(model, s[H, v in V] >= data.vertices[v].inv_min)
     @variable(model, q[H, V, K] >= 0)
@@ -16,8 +31,12 @@ function evalInventory(data::InventoryRoutingProblem, sol::Vector{Vector{Vector{
     @constraint(model, [t in H, v in V; v > 1], (t == 1 ? data.vertices[v].inv_init : s[t - 1, v]) + sum(q[t, v, k] for k in K) <= data.vertices[v].inv_max)
     @constraint(model, [t in H, v in V, k in K; !(v in sol[t][k])], q[t, v, k] == 0)
 
-    optimize!(model)        
-    return objective_value(model) + sum(vertex.inv_init * vertex.inv_cost for vertex in data.vertices), termination_status(model)
+    optimize!(model)
+    if checkFeasibility(termination_status(model), has_values(model))
+        return objective_value(model) + sum(vertex.inv_init * vertex.inv_cost for vertex in data.vertices), true
+    else
+        return typemax(Int64), false
+    end
 end
 
 function calculateRouteCost(data::InventoryRoutingProblem, sol::Vector{Vector{Vector{Int64}}})
