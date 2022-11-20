@@ -11,7 +11,7 @@ using Gurobi
 using HiGHS
 using Random
 
-max_pertubations = 1000
+max_pertubations = 10000
 file = "S_abs1n5_2_H3"
 data = loadIRP(file)
 for vertex in data.vertices
@@ -19,16 +19,22 @@ for vertex in data.vertices
         @warn("Minimum inventory > 0!")
     end
 end
+function runTest()
+    println("=============== Constructive heuristic ===============\n")
+    sol, left = constructive(data)
+    inv_cost, feasible = evalInventory(data, sol)
+    route_cost = calculateRouteCost(data, sol)
 
-println("=============== Constructive heuristic ===============\n")
-sol, left = constructive(data)
-inv_cost, feasible = evalInventory(data, sol)
-route_cost = calculateRouteCost(data, sol)
+    total_cost = route_cost + inv_cost
+    @printf("Total = %.2f (routing = %.2f, inventory = %.2f)\n\n", total_cost, route_cost, inv_cost)
 
-total_cost = route_cost + inv_cost
-@printf("Total = %.2f (routing = %.2f, inventory = %.2f)\n\n", total_cost, route_cost, inv_cost)
+    println("=============== Local Search ===============\n")
+    for i=1:max_pertubations
+        # sol, inv_cost, route_cost, total_cost= removeVerticeFromRoute(data, sol, total_cost, route_cost, inv_cost,i)
+        # sol, inv_cost, route_cost, total_cost= swapTwoVerticesFromRoute(data, sol, total_cost, route_cost, inv_cost,i)
+        sol, inv_cost, route_cost, total_cost= relocateTwoVerticesFromRoute(data, sol, total_cost, route_cost, inv_cost,i)
+    end
+    @printf("Total = %.2f (routing = %.2f, inventory = %.2f)\n", total_cost, route_cost, inv_cost)
+end
 
-println("=============== Local Search ===============\n")
-new_sol, new_inv_cost, new_route_cost, new_total_cost= removeVerticeFromRoute(data, sol, total_cost, max_pertubations)
-
-@printf("Total = %.2f (routing = %.2f, inventory = %.2f)\n", new_total_cost, new_route_cost, new_inv_cost)
+runTest()
