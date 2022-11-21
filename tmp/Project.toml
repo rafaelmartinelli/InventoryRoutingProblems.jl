@@ -1,5 +1,8 @@
 [deps]
 Gurobi = "2e9cd046-0924-5485-92f1-d5272153d98b"
+HiGHS = "87dc4568-4c63-4d18-b0c0-bb2238e4078b"
 InventoryRoutingProblems = "e8de3f6f-ae4e-4f89-bef5-bb3731e07e8d"
 JuMP = "4076af6c-e467-56ae-b986-b466b2749572"
+Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 p7zip_jll = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"

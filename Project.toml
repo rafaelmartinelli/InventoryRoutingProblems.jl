@@ -5,5 +5,4 @@ version = "0.1.0"
 
 [deps]
 Distances = "b4f34e82-e78d-54a5-968a-f98e89d6e8f7"
-HiGHS = "87dc4568-4c63-4d18-b0c0-bb2238e4078b"
 p7zip_jll = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"

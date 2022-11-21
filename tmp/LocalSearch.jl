@@ -1,5 +1,3 @@
-include("Helper.jl")
-
 function selectRandomElementToRemove(data::InventoryRoutingProblem, sol::Vector{Vector{Vector{Int64}}})
     t = rand(1:data.num_periods)
     k = rand(1:data.num_vehicles)
