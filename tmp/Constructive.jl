@@ -17,7 +17,8 @@ function constructive(data::InventoryRoutingProblem)
             if length(sol[t][k]) == 0
                 push!(sol[t][k], 1)
             end
-
+            
+            # vejo qual o melhor vertice para colocar na rota
             best = -1
             best_cost = typemax(Int64)
             for v in 2:length(data.vertices)
@@ -29,6 +30,7 @@ function constructive(data::InventoryRoutingProblem)
                 end
             end
 
+            # se não conseguir adicionar nenhum vertice eu adiciono o deposito (finalizo a rota)
             if best == -1
                 push!(sol[t][k], 1)
                 k += 1
@@ -36,6 +38,7 @@ function constructive(data::InventoryRoutingProblem)
                 continue
             end
 
+            # adiciono o vertice na rota 
             push!(sol[t][k], best)
             left[1] += left[best]
             capacity -= left[best]
