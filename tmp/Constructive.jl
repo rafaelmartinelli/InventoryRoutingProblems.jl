@@ -1,6 +1,6 @@
 struct Constructive
     data::InventoryRoutingProblem
-    formulation::Formulation
+    inventory::Inventory
 end
 
 function solve!(constructive::Constructive)
@@ -53,7 +53,7 @@ function solve!(constructive::Constructive)
     end
 
     route_cost = calculateRouteCost(data, routes)
-    inventory_cost = solve!(constructive.formulation, routes)
+    inventory_cost = solve!(constructive.inventory, routes)
     return Solution(routes, route_cost + inventory_cost, route_cost, inventory_cost)
 end
 

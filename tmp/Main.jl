@@ -7,7 +7,11 @@ using Random
 EPS = 1e-5
 
 include("Solution.jl")
-include("Formulation.jl")
+
+include("inventory/Inventory.jl")
+include("inventory/Formulation.jl")
+include("inventory/MinCostFlow.jl")
+
 include("Constructive.jl")
 include("local-search/Shift.jl")
 
@@ -24,14 +28,22 @@ function main()
         end
     end
 
-    println("=============== Build base model ===============")
+    println("=============== Build inventory model ===============")
     formulation = Formulation(data)
     println("Built!")
 
-    println("=============== Constructive heuristic ===============")
+    println("=============== Constructive heuristic with model ===============")
     constructive = Constructive(data, formulation)
     solution = solve!(constructive)
+    @printf("Total = %.2f (routing = %.2f, inventory = %.2f)\n\n", solution.cost, solution.route_cost, solution.inventory_cost)
 
+    println("=============== Build inventory graph ===============")
+    flow = MinCostFlow(data)
+    println("Built!")
+
+    println("=============== Constructive heuristic with flow ===============")
+    constructive = Constructive(data, flow)
+    solution = solve!(constructive)
     @printf("Total = %.2f (routing = %.2f, inventory = %.2f)\n\n", solution.cost, solution.route_cost, solution.inventory_cost)
 
     perc_init = 0.5

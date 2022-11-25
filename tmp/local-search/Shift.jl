@@ -1,6 +1,6 @@
 struct Shift
     data::InventoryRoutingProblem
-    formulation::Formulation
+    inventory::Inventory
     solution::Solution
 end
 
@@ -21,7 +21,7 @@ function eval(shift::Shift, args::ShiftArgs)
 
     route_diff = c[route[pos - 1], route[pos + 1]] + c[route[pos], route[pos + 2]] - c[route[pos - 1], route[pos]] - c[route[pos + 1], route[pos + 2]]
     route[pos], route[pos + 1] = route[pos + 1], route[pos]
-    inventory_cost = solve!(shift.formulation, solution.routes)
+    inventory_cost = solve!(shift.inventory, solution.routes)
     route[pos], route[pos + 1] = route[pos + 1], route[pos]
     inventory_diff = inventory_cost - solution.inventory_cost
 
@@ -39,7 +39,7 @@ function move(shift::Shift, args::ShiftArgs)
 
     route[pos], route[pos + 1] = route[pos + 1], route[pos]
     shift.solution.route_cost += c[route[pos - 1], route[pos + 1]] + c[route[pos], route[pos + 2]] - c[route[pos - 1], route[pos]] - c[route[pos + 1], route[pos + 2]]
-    shift.solution.inventory_cost = solve!(shift.formulation, solution.routes)
+    shift.solution.inventory_cost = solve!(shift.inventory, solution.routes)
     shift.solution.cost = shift.solution.route_cost + shift.solution.inventory_cost
 end
 

@@ -1,4 +1,4 @@
-struct Formulation
+struct Formulation <: Inventory
     data::InventoryRoutingProblem
     model::JuMP.Model
 
@@ -23,8 +23,9 @@ function buildModel(data::InventoryRoutingProblem)
     @objective(model, Min, sum(data.vertices[v].inv_cost * s[t, v] + PEN * a[t, v] for t in H, v in V))
 
     @constraint(model, [t in H, v in V; v > 1], s[t, v] == (t == 1 ? data.vertices[v].inv_init : s[t - 1, v]) + sum(q[t, k, v] for k in K) - data.vertices[v].demand + a[t, v])
-    @constraint(model, [t in H], s[t, 1] == (t == 1 ? data.vertices[1].inv_init : s[t - 1, 1]) - sum(q[t, k, v] for v in V, k in K) + data.vertices[1].demand)
-    @constraint(model, [t in H, k in K], sum(q[t, k, v] for v in V) <= data.capacity)
+    @constraint(model, [t in H], s[t, 1] == (t == 1 ? data.vertices[1].inv_init : s[t - 1, 1]) - sum(q[t, k, 1] for k in K) + data.vertices[1].demand)
+    @constraint(model, [t in H, k in K], sum(q[t, k, v] for v in V if v > 1) == q[t, k, 1])
+    @constraint(model, [t in H, k in K], q[t, k, 1] <= data.capacity)
     @constraint(model, [t in H, v in V; v > 1], (t == 1 ? data.vertices[v].inv_init : s[t - 1, v]) + sum(q[t, k, v] for k in K) <= data.vertices[v].inv_max)
 
     return model
