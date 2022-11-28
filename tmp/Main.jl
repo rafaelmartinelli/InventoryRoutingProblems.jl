@@ -1,7 +1,7 @@
 using InventoryRoutingProblems
 using Printf
-using JuMP
-using HiGHS
+# using JuMP
+# using HiGHS
 using Random
 
 EPS = 1e-5
@@ -9,16 +9,17 @@ EPS = 1e-5
 include("Solution.jl")
 
 include("inventory/Inventory.jl")
-include("inventory/Formulation.jl")
+# include("inventory/Formulation.jl")
 include("inventory/MinCostFlow.jl")
 
 include("Constructive.jl")
 include("local-search/Shift.jl")
-include("local-search/Relocate.jl")
-include("local-search/SwapInter.jl")
+include("local-search/Swap.jl")
+# include("local-search/Relocate.jl")
 
+Random.seed!(1)
 max_pertubations = 10000
-file = "S_abs1n5_2_H3"
+file = "S_abs1n15_2_H6"
 
 function main()
     println("=============== Load instance ===============")
@@ -30,14 +31,14 @@ function main()
         end
     end
 
-    println("=============== Build inventory model ===============")
-    formulation = Formulation(data)
-    println("Built!")
+    # println("=============== Build inventory model ===============")
+    # formulation = Formulation(data)
+    # println("Built!")
 
-    println("=============== Constructive heuristic with model ===============")
-    constructive = Constructive(data, formulation)
-    solution = solve!(constructive)
-    @printf("Total = %.2f (routing = %.2f, inventory = %.2f)\n\n", solution.cost, solution.route_cost, solution.inventory_cost)
+    # println("=============== Constructive heuristic with model ===============")
+    # constructive = Constructive(data, formulation)
+    # @time solution = solve!(constructive)
+    # @printf("Total = %.2f (routing = %.2f, inventory = %.2f)\n\n", solution.cost, solution.route_cost, solution.inventory_cost)
 
     println("=============== Build inventory graph ===============")
     flow = MinCostFlow(data)
@@ -45,30 +46,32 @@ function main()
 
     println("=============== Constructive heuristic with flow ===============")
     constructive = Constructive(data, flow)
-    solution = solve!(constructive)
+    @time solution = solve!(constructive)
     @printf("Total = %.2f (routing = %.2f, inventory = %.2f)\n\n", solution.cost, solution.route_cost, solution.inventory_cost)
 
-    perc_init = 0.5
-    perc_final = 0.01
-    iterations = 10
-    mov_pertub = 5
+    shift = Shift(data, flow, solution)
+    localSearch(shift)
 
-    ini_temp = (perc_init * solution.cost) / -log(perc_init);
-    end_temp = (perc_final * solution.cost) / -log(perc_final);
-    factor = (end_temp / ini_temp) ^ (1 / iterations);
+    @printf("Total = %.2f (routing = %.2f, inventory = %.2f)\n\n", solution.cost, solution.route_cost, solution.inventory_cost)
 
-    temp = ini_temp
+    swap = Swap(data, flow, solution)
+    localSearch(swap)
 
-    # shift = Shift(data, formulation, solution)
-    # localSearch(shift)
+    @printf("Total = %.2f (routing = %.2f, inventory = %.2f)\n\n", solution.cost, solution.route_cost, solution.inventory_cost)
 
-    # relocate = Relocate(data, formulation, solution)
+    # relocate = Relocate(data, flow, solution)
     # localSearch(relocate)
 
-    swapInter = Swap(data, formulation, solution)
-    localSearch(swapInter)
+    # perc_init = 0.5
+    # perc_final = 0.01
+    # iterations = 10
+    # mov_pertub = 5
 
-    @printf("Total = %.2f (routing = %.2f, inventory = %.2f)\n\n", solution.cost, solution.route_cost, solution.inventory_cost)
+    # ini_temp = (perc_init * solution.cost) / -log(perc_init);
+    # end_temp = (perc_final * solution.cost) / -log(perc_final);
+    # factor = (end_temp / ini_temp) ^ (1 / iterations);
+
+    # temp = ini_temp
 
     # while temp > end_temp
     #     new_sol, new_route_cost = Pertub(data, sol, route_cost)
@@ -96,6 +99,8 @@ function main()
     #     sol, inv_cost, route_cost, total_cost= relocateTwoVerticesFromRoute(data, sol, total_cost, route_cost, inv_cost,i)
     # end
     # @printf("Total = %.2f (routing = %.2f, inventory = %.2f)\n", total_cost, route_cost, inv_cost)
+
+    return solution
 end
 
-main()
+solution = main()

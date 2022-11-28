@@ -15,16 +15,16 @@ function eval(shift::Shift, args::ShiftArgs)
     route = shift.solution.routes[t][k]
     c = shift.data.costs
 
-    if pos <= 1 || pos >= length(route[pos]) - 1
+    if pos <= 1 || pos >= length(route) - 1
         return Inf64
     end
 
-    route_diff = c[route[pos - 1], route[pos + 1]] + c[route[pos], route[pos + 2]]
-            - c[route[pos - 1], route[pos]] - c[route[pos + 1], route[pos + 2]]
+    route_diff = c[route[pos - 1], route[pos + 1]] + c[route[pos], route[pos + 2]] -
+                 c[route[pos - 1], route[pos]] - c[route[pos + 1], route[pos + 2]]
     route[pos], route[pos + 1] = route[pos + 1], route[pos]
-    inventory_cost = solve!(shift.inventory, solution.routes)
+    inventory_cost = solve!(shift.inventory, shift.solution.routes)
     route[pos], route[pos + 1] = route[pos + 1], route[pos]
-    inventory_diff = inventory_cost - solution.inventory_cost
+    inventory_diff = inventory_cost - shift.solution.inventory_cost
 
     return route_diff + inventory_diff
 end
@@ -32,21 +32,27 @@ end
 function move(shift::Shift, args::ShiftArgs)
     t, k, pos = args.t, args.k, args.pos
     route = shift.solution.routes[t][k]
-    c = data.costs
+    c = shift.data.costs
 
-    if pos <= 1 || pos >= length(route[pos]) - 1
-        return Inf64
+    if pos <= 1 || pos >= length(route) - 1
+        return
     end
 
+    shift.solution.route_cost += c[route[pos - 1], route[pos + 1]] + c[route[pos], route[pos + 2]] -
+                                 c[route[pos - 1], route[pos]] - c[route[pos + 1], route[pos + 2]]
     route[pos], route[pos + 1] = route[pos + 1], route[pos]
-    shift.solution.route_cost += c[route[pos - 1], route[pos + 1]] + c[route[pos], route[pos + 2]] - c[route[pos - 1], route[pos]] - c[route[pos + 1], route[pos + 2]]
-    shift.solution.inventory_cost = solve!(shift.inventory, solution.routes)
+    shift.solution.inventory_cost = solve!(shift.inventory, shift.solution.routes)
     shift.solution.cost = shift.solution.route_cost + shift.solution.inventory_cost
 end
 
 function random(shift::Shift)
     t = rand(1:shift.data.num_periods)
     k = rand(1:shift.data.num_vehicles)
+
+    if length(shift.solution.routes[t][k]) < 4
+        return false
+    end
+
     pos = rand(2:length(shift.solution.routes[t][k]) - 2)
     args = ShiftArgs(t, k, pos)
 

@@ -6,6 +6,7 @@ end
 function solve!(constructive::Constructive)
     data = constructive.data
     routes = [ [ Int64[] for _ in 1:data.num_vehicles ] for _ in 1:data.num_periods ]
+    in_period = [ BitVector([ 0 for _ in 1:length(data.vertices) ]) for _ in 1:data.num_periods ]
 
     left = [ vertex.inv_init for vertex in data.vertices ]
     for t in 1:data.num_periods
@@ -28,7 +29,7 @@ function solve!(constructive::Constructive)
             best = -1
             best_cost = typemax(Int64)
             for v in 2:length(data.vertices)
-                if left[v] < 0 && capacity - left[v] <= data.capacity
+                if left[v] < 0 && capacity - left[v] <= data.capacity && !in_period[t][v]
                     if data.costs[routes[t][k][end], v] < best_cost
                         best = v
                         best_cost = data.costs[routes[t][k][end], v]
@@ -46,6 +47,8 @@ function solve!(constructive::Constructive)
 
             # adiciono o vertice na rota 
             push!(routes[t][k], best)
+            in_period[t][best] = true
+
             left[1] += left[best]
             capacity -= left[best]
             left[best] = 0
@@ -54,7 +57,7 @@ function solve!(constructive::Constructive)
 
     route_cost = calculateRouteCost(data, routes)
     inventory_cost = solve!(constructive.inventory, routes)
-    return Solution(routes, route_cost + inventory_cost, route_cost, inventory_cost)
+    return Solution(routes, route_cost + inventory_cost, route_cost, inventory_cost, in_period)
 end
 
 function calculateRouteCost(data::InventoryRoutingProblem, routes::Vector{Vector{Vector{Int64}}})

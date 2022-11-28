@@ -29,4 +29,3 @@ function solve!(flow::MinCostFlow, routes::Vector{Vector{Vector{Int64}}})
     cost = round(cost * 100) / 100
     return cost
 end
-
