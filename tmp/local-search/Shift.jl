@@ -19,7 +19,8 @@ function eval(shift::Shift, args::ShiftArgs)
         return Inf64
     end
 
-    route_diff = c[route[pos - 1], route[pos + 1]] + c[route[pos], route[pos + 2]] - c[route[pos - 1], route[pos]] - c[route[pos + 1], route[pos + 2]]
+    route_diff = c[route[pos - 1], route[pos + 1]] + c[route[pos], route[pos + 2]]
+            - c[route[pos - 1], route[pos]] - c[route[pos + 1], route[pos + 2]]
     route[pos], route[pos + 1] = route[pos + 1], route[pos]
     inventory_cost = solve!(shift.inventory, solution.routes)
     route[pos], route[pos + 1] = route[pos + 1], route[pos]

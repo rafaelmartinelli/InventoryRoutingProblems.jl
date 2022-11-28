@@ -15,6 +15,7 @@ include("inventory/MinCostFlow.jl")
 include("Constructive.jl")
 include("local-search/Shift.jl")
 include("local-search/Relocate.jl")
+include("local-search/SwapInter.jl")
 
 max_pertubations = 10000
 file = "S_abs1n5_2_H3"
@@ -38,14 +39,14 @@ function main()
     solution = solve!(constructive)
     @printf("Total = %.2f (routing = %.2f, inventory = %.2f)\n\n", solution.cost, solution.route_cost, solution.inventory_cost)
 
-    # println("=============== Build inventory graph ===============")
-    # flow = MinCostFlow(data)
-    # println("Built!")
+    println("=============== Build inventory graph ===============")
+    flow = MinCostFlow(data)
+    println("Built!")
 
-    # println("=============== Constructive heuristic with flow ===============")
-    # constructive = Constructive(data, flow)
-    # solution = solve!(constructive)
-    # @printf("Total = %.2f (routing = %.2f, inventory = %.2f)\n\n", solution.cost, solution.route_cost, solution.inventory_cost)
+    println("=============== Constructive heuristic with flow ===============")
+    constructive = Constructive(data, flow)
+    solution = solve!(constructive)
+    @printf("Total = %.2f (routing = %.2f, inventory = %.2f)\n\n", solution.cost, solution.route_cost, solution.inventory_cost)
 
     perc_init = 0.5
     perc_final = 0.01
@@ -61,8 +62,12 @@ function main()
     # shift = Shift(data, formulation, solution)
     # localSearch(shift)
 
-    relocate = Relocate(data, formulation, solution)
-    localSearch(relocate)
+    # relocate = Relocate(data, formulation, solution)
+    # localSearch(relocate)
+
+    swapInter = Swap(data, formulation, solution)
+    localSearch(swapInter)
+
     @printf("Total = %.2f (routing = %.2f, inventory = %.2f)\n\n", solution.cost, solution.route_cost, solution.inventory_cost)
 
     # while temp > end_temp

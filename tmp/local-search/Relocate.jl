@@ -24,7 +24,13 @@ function eval(relocate::Relocate, args::RelocateArgs)
         return Inf64
     end
 
-    # 2 vehicles cannot visit the same customer in the same period, nor can the same customer be visited twice on the same route.
+    # 2 vehicles cannot visit the same customer in the same period,
+    # nor can the same customer be visited twice on the same route.
+    for v in 1:relocate.data.num_vehicles
+        if pos in relocate.solution.routes[t2][v]
+            return Inf64
+        end
+    end
 
     route_diff = c[route[pos - 1], route[pos + 1]] - c[route2[pos2 - 1], route[pos]] - c[route[pos], route2[pos2]]
     insert!(route2,pos2,route[pos])
@@ -46,6 +52,14 @@ function move(relocate::Relocate, args::RelocateArgs)
 
     if pos <= 1 || pos >= length(route[pos]) - 1 || pos2 <= 1 || pos2 >= length(route2[pos2]) - 1
         return Inf64
+    end
+
+    # 2 vehicles cannot visit the same customer in the same period, 
+    # nor can the same customer be visited twice on the same route.
+    for v in 1:swap.data.num_vehicles
+        if pos in swap.solution.routes[t2][v]
+            return Inf64
+        end
     end
 
     insert!(route2,pos2,route[pos])
