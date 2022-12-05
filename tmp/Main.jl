@@ -15,7 +15,8 @@ include("inventory/MinCostFlow.jl")
 include("Constructive.jl")
 include("local-search/Shift.jl")
 include("local-search/Swap.jl")
-# include("local-search/Relocate.jl")
+include("local-search/Relocate.jl")
+include("local-search/Remove.jl")
 
 Random.seed!(1)
 max_pertubations = 10000
@@ -49,18 +50,29 @@ function main()
     @time solution = solve!(constructive)
     @printf("Total = %.2f (routing = %.2f, inventory = %.2f)\n\n", solution.cost, solution.route_cost, solution.inventory_cost)
 
+    println("=============== Shift Local Search ===============")
     shift = Shift(data, flow, solution)
     localSearch(shift)
 
     @printf("Total = %.2f (routing = %.2f, inventory = %.2f)\n\n", solution.cost, solution.route_cost, solution.inventory_cost)
 
+    println("=============== Swap Local Search ===============")
     swap = Swap(data, flow, solution)
     localSearch(swap)
 
     @printf("Total = %.2f (routing = %.2f, inventory = %.2f)\n\n", solution.cost, solution.route_cost, solution.inventory_cost)
 
-    # relocate = Relocate(data, flow, solution)
-    # localSearch(relocate)
+    println("=============== Relocate Local Search ===============")
+    relocate = Relocate(data, flow, solution)
+    localSearch(relocate)
+
+    @printf("Total = %.2f (routing = %.2f, inventory = %.2f)\n\n", solution.cost, solution.route_cost, solution.inventory_cost)
+
+    println("=============== Remove Local Search ===============")
+    remove = Remove(data, flow, solution)
+    localSearch(remove)
+
+    @printf("Total = %.2f (routing = %.2f, inventory = %.2f)\n\n", solution.cost, solution.route_cost, solution.inventory_cost)
 
     # perc_init = 0.5
     # perc_final = 0.01
