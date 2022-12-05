@@ -1,10 +1,10 @@
-struct Constructive
+struct DemandLeft <: Constructive
     data::InventoryRoutingProblem
     inventory::Inventory
 end
 
-function solve!(constructive::Constructive)
-    data = constructive.data
+function solve!(demand_left::DemandLeft)
+    data = demand_left.data
     routes = [ [ Int64[] for _ in 1:data.num_vehicles ] for _ in 1:data.num_periods ]
     in_period = [ BitVector([ 0 for _ in 1:length(data.vertices) ]) for _ in 1:data.num_periods ]
 
@@ -56,18 +56,6 @@ function solve!(constructive::Constructive)
     end
 
     route_cost = calculateRouteCost(data, routes)
-    inventory_cost = solve!(constructive.inventory, routes)
+    inventory_cost = solve!(demand_left.inventory, routes)
     return Solution(routes, route_cost + inventory_cost, route_cost, inventory_cost, in_period)
-end
-
-function calculateRouteCost(data::InventoryRoutingProblem, routes::Vector{Vector{Vector{Int64}}})
-    route_cost = 0
-    for t in 1:data.num_periods
-        for k in 1:data.num_vehicles
-            for v in 2:length(routes[t][k])
-                route_cost += data.costs[routes[t][k][v - 1], routes[t][k][v]]
-            end
-        end
-    end
-    return route_cost
 end

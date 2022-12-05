@@ -1,4 +1,4 @@
-struct Shift
+mutable struct Shift <: Neighborhood
     data::InventoryRoutingProblem
     inventory::Inventory
     solution::Solution
@@ -29,7 +29,7 @@ function eval(shift::Shift, args::ShiftArgs)
     return route_diff + inventory_diff
 end
 
-function move(shift::Shift, args::ShiftArgs)
+function move!(shift::Shift, args::ShiftArgs)
     t, k, pos = args.t, args.k, args.pos
     route = shift.solution.routes[t][k]
     c = shift.data.costs
@@ -45,7 +45,7 @@ function move(shift::Shift, args::ShiftArgs)
     shift.solution.cost = shift.solution.route_cost + shift.solution.inventory_cost
 end
 
-function random(shift::Shift)
+function random!(shift::Shift)
     t = rand(1:shift.data.num_periods)
     k = rand(1:shift.data.num_vehicles)
 
@@ -54,16 +54,17 @@ function random(shift::Shift)
     end
 
     pos = rand(2:length(shift.solution.routes[t][k]) - 2)
+    
     args = ShiftArgs(t, k, pos)
-
     if eval(shift, args) != Inf64
-        move(shift, args)
+        move!(shift, args)
         return true
     end
     return false
 end
 
-function localSearch(shift::Shift)
+function localSearch!(shift::Shift)
+    moved = false
     for t in 1:shift.data.num_periods
         for k in 1:shift.data.num_vehicles
             for pos in 2:length(shift.solution.routes[t][k]) - 2
@@ -71,9 +72,11 @@ function localSearch(shift::Shift)
                 diff = eval(shift, args)
 
                 if diff < -EPS
-                    move(shift, args)
+                    move!(shift, args)
+                    moved = true
                 end
             end
         end
     end
+    return moved
 end

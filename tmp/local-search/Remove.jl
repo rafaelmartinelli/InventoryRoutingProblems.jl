@@ -1,4 +1,4 @@
-struct Remove
+mutable struct Remove <: Neighborhood
     data::InventoryRoutingProblem
     inventory::Inventory
     solution::Solution
@@ -21,15 +21,17 @@ function eval(remove::Remove, args::RemoveArgs)
 
     route_diff = c[route[pos - 1], route[pos + 1]] -
                  c[route[pos - 1], route[pos]] - c[route[pos], route[pos + 1]]
-    deleteat!(route,pos)
+
+    removed = route[pos]
+    deleteat!(route, pos)
     inventory_cost = solve!(remove.inventory, remove.solution.routes)
-    insert!(route,pos,route[pos])
+    insert!(route, pos, removed)
     inventory_diff = inventory_cost - remove.solution.inventory_cost
 
     return route_diff + inventory_diff
 end
 
-function move(remove::Remove, args::RemoveArgs)
+function move!(remove::Remove, args::RemoveArgs)
     t, k, pos = args.t, args.k, args.pos
     route = remove.solution.routes[t][k]
     c = remove.data.costs
@@ -40,12 +42,12 @@ function move(remove::Remove, args::RemoveArgs)
 
     remove.solution.route_cost += c[route[pos - 1], route[pos + 1]] -
                                   c[route[pos - 1], route[pos]] - c[route[pos], route[pos + 1]]
-    deleteat!(route,pos)
+    deleteat!(route, pos)
     remove.solution.inventory_cost = solve!(remove.inventory, remove.solution.routes)
     remove.solution.cost = remove.solution.route_cost + remove.solution.inventory_cost
 end
 
-function random(remove::Remove)
+function random!(remove::Remove)
     t = rand(1:remove.data.num_periods)
     k = rand(1:remove.data.num_vehicles)
 
@@ -54,26 +56,28 @@ function random(remove::Remove)
     end
 
     pos = rand(2:length(remove.solution.routes[t][k]) - 1)
+    
     args = RemoveArgs(t, k, pos)
-
     if eval(remove, args) != Inf64
-        move(remove, args)
+        move!(remove, args)
         return true
     end
     return false
 end
 
-function localSearch(remove::Remove)
+function localSearch!(remove::Remove)
+    moved = false
     for t in 1:remove.data.num_periods
         for k in 1:remove.data.num_vehicles
             for pos in 2:length(remove.solution.routes[t][k]) - 1
                 args = RemoveArgs(t, k, pos)
                 diff = eval(remove, args)
-
                 if diff < -EPS
-                    move(remove, args)
+                    move!(remove, args)
+                    moved = true
                 end
             end
         end
     end
+    return moved
 end

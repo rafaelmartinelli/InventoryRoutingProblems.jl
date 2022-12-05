@@ -1,4 +1,4 @@
-struct Swap
+mutable struct Swap <: Neighborhood
     data::InventoryRoutingProblem
     inventory::Inventory
     solution::Solution
@@ -48,7 +48,7 @@ function eval(swap::Swap, args::SwapArgs)
     return route_diff + inventory_diff
 end
 
-function move(swap::Swap, args::SwapArgs)
+function move!(swap::Swap, args::SwapArgs)
     t1, k1, pos1 = args.t1, args.k1, args.pos1
     t2, k2, pos2 = args.t2, args.k2, args.pos2
     route1 = swap.solution.routes[t1][k1]
@@ -87,7 +87,7 @@ function move(swap::Swap, args::SwapArgs)
     swap.solution.cost = swap.solution.route_cost + swap.solution.inventory_cost
 end
 
-function random(swap::Swap)
+function random!(swap::Swap)
     t1 = rand(1:swap.data.num_periods)
     k1 = rand(1:swap.data.num_vehicles)
     t2 = rand(1:swap.data.num_periods)
@@ -108,16 +108,15 @@ function random(swap::Swap)
     end
 
     args = SwapArgs(t1, k1, pos1, t2, k2, pos2)
-    println(args)
-
     if eval(swap, args) != Inf64
-        move(swap, args)
+        move!(swap, args)
         return true
     end
     return false
 end
 
-function localSearch(swap::Swap)
+function localSearch!(swap::Swap)
+    moved = false
     for t1 in 1:swap.data.num_periods
         for k1 in 1:swap.data.num_vehicles
             for t2 in 1:swap.data.num_periods
@@ -125,11 +124,12 @@ function localSearch(swap::Swap)
                     end1 = length(swap.solution.routes[t1][k1]) - (t1 == t2 && k1 == k2 ? 3 : 1)
                     for pos1 in 2:end1
                         start2 = (t1 == t2 && k1 == k2 ? pos1 : 0) + 2
-                        for pos2 in start2:length(swap.solution.routes[t1][k1]) - 2
+                        for pos2 in start2:length(swap.solution.routes[t2][k2]) - 2
                             args = SwapArgs(t1, k1, pos1, t2, k2, pos2)
                             diff = eval(swap, args)            
                             if diff < -EPS
-                                move(swap, args)
+                                move!(swap, args)
+                                moved = true
                             end
                         end
                     end
@@ -137,4 +137,5 @@ function localSearch(swap::Swap)
             end
         end
     end
+    return moved
 end
