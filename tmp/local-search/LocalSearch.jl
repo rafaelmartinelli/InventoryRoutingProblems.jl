@@ -9,6 +9,7 @@ mutable struct LocalSearch
         push!(neighborhoods, Remove(data, inventory, solution))
         push!(neighborhoods, Shift(data, inventory, solution))
         push!(neighborhoods, Swap(data, inventory, solution))
+        push!(neighborhoods, Insert(data, inventory, solution))
 
         return new(data, neighborhoods, solution)
     end

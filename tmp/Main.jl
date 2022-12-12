@@ -1,7 +1,7 @@
 using InventoryRoutingProblems
 using Printf
 using JuMP
-using Gurobi
+using HiGHS
 using Random
 
 EPS = 1e-5
@@ -21,12 +21,12 @@ include("local-search/Shift.jl")
 include("local-search/Swap.jl")
 include("local-search/Relocate.jl")
 include("local-search/Remove.jl")
+include("local-search/Insert.jl")
 include("local-search/LocalSearch.jl")
 
 include("IteratedLocalSearch.jl")
 
 Random.seed!(42)
-max_pertubations = 10000
 file = "S_abs1n15_2_H6"
 
 function main()
