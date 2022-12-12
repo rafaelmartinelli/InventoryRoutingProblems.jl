@@ -13,7 +13,7 @@ function buildModel(data::InventoryRoutingProblem)
     H = 1:data.num_periods
     PEN = 1000
 
-    model = Model(Gurobi.Optimizer)
+    model = Model(HiGHS.Optimizer)
     set_silent(model)
 
     @variable(model, s[H, v in V] >= data.vertices[v].inv_min)
