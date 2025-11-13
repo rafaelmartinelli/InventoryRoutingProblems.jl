@@ -38,9 +38,7 @@ function getRawData(name::String)::Union{Vector{String}, Nothing}
     data_file = joinpath(data_path, "data.7z")
     file_name = name * ".dat"
 
-    # Create a unique temporary directory for this extraction to avoid conflicts
     temp_dir = mktempdir()
-    
     try
         run(pipeline(`$(p7zip()) e $data_file -y -o$temp_dir $file_name`; stdout = devnull, stderr = devnull))
 
@@ -53,7 +51,6 @@ function getRawData(name::String)::Union{Vector{String}, Nothing}
         raw = split(read(abs_file_name, String))
         return raw
     finally
-        # Clean up the temporary directory and all its contents
         rm(temp_dir; recursive = true, force = true)
     end
 end
