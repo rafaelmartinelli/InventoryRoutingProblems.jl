@@ -59,14 +59,14 @@ The package still does not load custom IRP instances.
 
 ## Installation
 
-`InventoryRoutingProblems` is _not_ a registered Julia Package...
+`InventoryRoutingProblems` is a registered Julia Package! yay!
 
 You can install `InventoryRoutingProblems` through the Julia package manager.
 
 Open Julia's interactive session (REPL) and type:
 
 ```julia
-] add https://github.com/rafaelmartinelli/InventoryRoutingProblems.jl
+] add InventoryRoutingProblems
 ```
 
 __Do not forget__ to :star:star:star: our package! :grin:
