@@ -1,9 +1,9 @@
 # InventoryRoutingProblems.jl
 
 <!-- [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://rafaelmartinelli.github.io/InventoryRoutingProblems.jl/stable)
-[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://rafaelmartinelli.github.io/InventoryRoutingProblems.jl/dev) -->
+[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://rafaelmartinelli.github.io/InventoryRoutingProblems.jl/dev)
 [![Build Status](https://github.com/rafaelmartinelli/InventoryRoutingProblems.jl/workflows/CI/badge.svg)](https://github.com/rafaelmartinelli/InventoryRoutingProblems.jl/actions)
-<!-- [![Coverage](https://codecov.io/gh/rafaelmartinelli/InventoryRoutingProblems.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/rafaelmartinelli/InventoryRoutingProblems.jl) -->
+[![Coverage](https://codecov.io/gh/rafaelmartinelli/InventoryRoutingProblems.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/rafaelmartinelli/InventoryRoutingProblems.jl) -->
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 
 This package reads data files for Inventory Routing Problem (IRP) instances.
